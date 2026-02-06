@@ -104,13 +104,10 @@ observer.observe(transactionTable, {
   subtree: true,
 });
 
-// Initialize an empty array to store the transactions
-let transactions = [];
-
 // Load transactions on page load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   if (Auth.isLoggedIn()) {
-    transactions = DataManager.loadTransactions();
+    transactions = await DataManager.loadTransactions();
     updateBalance();
     updateTransactionTable();
   }
@@ -152,7 +149,7 @@ function addTransaction() {
   // Add the transaction to the array
   transactions.push(transaction);
 
-  // Save to localStorage
+  // Save to online database
   DataManager.saveTransactions(transactions);
 
   // Update the balance
@@ -174,7 +171,7 @@ function deleteTransaction(primeId) {
     transactions.splice(index, 1);
   }
 
-  // Save to localStorage
+  // Save to online database
   DataManager.saveTransactions(transactions);
 
   // Update the balance
@@ -245,7 +242,7 @@ function saveTransaction() {
   // Clear the edited transaction
   editedTransaction = null;
 
-  // Save to localStorage
+  // Save to online database
   DataManager.saveTransactions(transactions);
 
   // Update the balance
@@ -1213,3 +1210,44 @@ function showSearchNotification(message, type = 'info') {
     }, 300);
   }, 3000);
 }
+
+
+// Theme Toggle
+function toggleTheme() {
+  const body = document.body;
+  const icon = document.getElementById('theme-icon') || document.getElementById('theme-icon-user');
+  
+  if (body.classList.contains('dark-theme')) {
+    body.classList.remove('dark-theme');
+    body.classList.add('light-theme');
+    icon.classList.remove('fa-sun');
+    icon.classList.add('fa-moon');
+    localStorage.setItem('theme', 'light');
+  } else {
+    body.classList.remove('light-theme');
+    body.classList.add('dark-theme');
+    icon.classList.remove('fa-moon');
+    icon.classList.add('fa-sun');
+    localStorage.setItem('theme', 'dark');
+  }
+}
+
+// Load saved theme
+document.addEventListener('DOMContentLoaded', function() {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  const icon = document.getElementById('theme-icon') || document.getElementById('theme-icon-user');
+  
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+    if (icon) {
+      icon.classList.remove('fa-sun');
+      icon.classList.add('fa-moon');
+    }
+  } else {
+    document.body.classList.add('dark-theme');
+    if (icon) {
+      icon.classList.remove('fa-moon');
+      icon.classList.add('fa-sun');
+    }
+  }
+});

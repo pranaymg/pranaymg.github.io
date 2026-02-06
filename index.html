@@ -6,7 +6,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzBmMDA4MSIvPgo8Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxMiIgZmlsbD0iI2ZmOGMwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiLz4KPHBhdGggZD0iTTEwIDEySDIyVjE4SDEwVjEyWiIgZmlsbD0iI2ZmZmZmZiIvPgo8Y2lyY2xlIGN4PSIxNiIgY3k9IjE0IiByPSIxLjUiIGZpbGw9IiMwZjAwODEiLz4KPHBhdGggZD0iTTE0IDI0QzE0IDI2LjIwOTEgMTUuNzkwOSAyOCAxOCAyOEMyMC4yMDkxIDI4IDIyIDI2LjIwOTEgMjIgMjQiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+">
     <link rel="icon" type="image/png" sizes="16x16" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iMiIgZmlsbD0iIzBmMDA4MSIvPgo8Y2lyY2xlIGN4PSI4IiBjeT0iOCIgcj0iNiIgZmlsbD0iI2ZmOGMwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjEiLz4KPHBhdGggZD0iTTUgNkgxMVY5SDVWNloiIGZpbGw9IiNmZmZmZmYiLz4KPGNpcmNsZSBjeD0iOCIgY3k9IjciIHI9IjAuNSIgZmlsbD0iIzBmMDA4MSIvPgo8cGF0aCBkPSJNNyAxMkM3IDEzLjEwNDYgNy44OTU0MyAxNCA5IDE0QzEwLjEwNDYgMTQgMTEgMTMuMTA0NiAxMSAxMiIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4=">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="modern-theme.css" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css"
@@ -23,8 +23,6 @@
   </head>
 
   <body>
-    <!-- Skip to main content for accessibility -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
     
     <nav role="navigation" aria-label="Main navigation">
       <div class="navbar">
@@ -36,25 +34,17 @@
           <li><a href="#tracker">Use Tracker</a></li>
           <li><a href="#how-it-works">How it works</a></li>
           <li><a href="#invite">Community</a></li>
-          <li><a href="./support.html">Support</a></li>
         </ul>
         
         <!-- Search Bar -->
         <div class="search-container">
-          <div class="search-bar">
-            <i class="fas fa-search search-icon" aria-hidden="true"></i>
-            <input type="text" id="search-input" placeholder="Search" class="search-input" aria-label="Search the website" role="searchbox">
-            <div class="search-shortcut" aria-label="Press Ctrl+K or Cmd+K to search">
-              <span class="shortcut-key">⌘</span>
-              <span class="shortcut-key">K</span>
-              <span class="shortcut-separator">/</span>
-              <span class="shortcut-key">Ctrl</span>
-              <span class="shortcut-key">K</span>
-            </div>
-          </div>
+          <input type="text" id="search-input" placeholder="Search" class="search-input" aria-label="Search the website" role="searchbox">
         </div>
         
         <div class="buttons" id="auth-buttons">
+          <button onclick="toggleTheme()" class="theme-toggle" title="Toggle Theme">
+            <i class="fas fa-moon" id="theme-icon"></i>
+          </button>
           <a href="./login.html" class="btn-head"
             ><i class="fas fa-sign-in-alt"></i> Log In</a
           >
@@ -62,6 +52,9 @@
             ><i class="fas fa-user-plus"></i> Sign Up</a>
         </div>
         <div class="buttons" id="user-info" style="display: none;">
+          <button onclick="toggleTheme()" class="theme-toggle" title="Toggle Theme">
+            <i class="fas fa-moon" id="theme-icon-user"></i>
+          </button>
           <span class="user-name" style="color: #fff; margin-right: 10px;"></span>
           <button onclick="Auth.logout(); location.reload();" class="btn-head"
             ><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -86,7 +79,6 @@
           <a href="./sign-up.html" class="under-welcome-btn">Sign Up Now</a>
         </div>
         <div class="under-welcome-image">
-          <img src="./assets/makeme.png" alt="Power Finance" />
         </div>
       </div>
     </section>
@@ -127,6 +119,17 @@
         <div class="transaction-form">
           <input type="text" id="description" placeholder="Description" />
           <input type="number" id="amount" placeholder="Amount" />
+          <select id="category">
+            <option value="Food">🍔 Food</option>
+            <option value="Shopping">🛒 Shopping</option>
+            <option value="Transport">🚗 Transport</option>
+            <option value="Bills">💡 Bills</option>
+            <option value="Entertainment">🎬 Entertainment</option>
+            <option value="Health">🏥 Health</option>
+            <option value="Education">📚 Education</option>
+            <option value="Salary">💰 Salary</option>
+            <option value="Other">📌 Other</option>
+          </select>
           <select id="type">
             <option value="income">Income</option>
             <option value="expense">Expense</option>
@@ -134,6 +137,7 @@
           <button onclick="addTransaction()">Add Transaction</button>
           <button onclick="SMSReader.showSMSInput()" style="background: #28a745;"><i class="fas fa-sms"></i> Import SMS</button>
           <button onclick="handleDownload()">Export</button>
+          <button onclick="showCategoryAnalysis()" style="background: #6c757d;"><i class="fas fa-chart-pie"></i> Categories</button>
         </div>
         <div class="table-part" id="table-part">
           <table id="transaction-table">
@@ -141,6 +145,7 @@
               <th>Date</th>
               <th>Description</th>
               <th>Amount</th>
+              <th>Category</th>
               <th>Type</th>
               <th>Action</th>
             </tr>
@@ -190,11 +195,6 @@
           <a href="./sign-up.html" class="sign-up-button-btn">Sign Up Now</a>
         </div>
         <div class="right-working-image">
-          <img
-            src="./assets/how-it-works.png"
-            target="_self"
-            alt="Power Finance"
-          />
         </div>
       </div>
     </section>
@@ -253,7 +253,7 @@
               Manage your income, expenses, and financial goals effortlessly.
             </p>
             <div class="social-links">
-              <a href="https://github.com/neeraj542/Personal-Finance-Tracker" target="_blank" rel="noopener noreferrer" class="social-link"><i class="fab fa-github"></i></a>
+              <a href="https://github.com/pranaymg/pranaymg.github.io" target="_blank" rel="noopener noreferrer" class="social-link"><i class="fab fa-github"></i></a>
               <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
               <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
               <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
@@ -266,7 +266,6 @@
               <li><a href="#tracker">Use Tracker</a></li>
               <li><a href="#how-it-works">How it Works</a></li>
               <li><a href="#invite">Community</a></li>
-              <li><a href="./support.html">Support</a></li>
             </ul>
           </div>
           
@@ -284,8 +283,8 @@
             <h4>Contact Info</h4>
             <div class="contact-info">
               <p><i class="fas fa-envelope"></i> support@financetracker.com</p>
-              <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
-              <p><i class="fas fa-map-marker-alt"></i> New York, NY</p>
+              <p><i class="fas fa-phone"></i> +917093447737</p>
+              <p><i class="fas fa-map-marker-alt"></i> Pallavi Engineering College, Hyderabad</p>
             </div>
           </div>
         </div>
@@ -293,10 +292,7 @@
         <div class="footer-bottom">
           <div class="footer-bottom-content">
             <p>&copy; 2025 Finance Tracker. All rights reserved.</p>
-            <p class="developer-credit">Created by <strong>PRANAY MAYUR GAJJALA
-              THURUMELLA RITHWIK ROY
-              ARAVAPALLY DEVI
-              MADDISETTI ASHOK</strong> - Group 12 project</p>
+            <p class="developer-credit">Created by <strong>Pranay Mayur Gajjala, Aravapally Devi, Thurumella Rithwik Roy and Maddisetti Ashok</strong> - Batch 12-4th year Project</p>
           </div>
         </div>
       </div>
@@ -304,6 +300,7 @@
     <script>
       feather.replace();
     </script>
+    <script src="db-config.js"></script>
     <script src="auth.js"></script>
     <script src="sms-parser.js"></script>
     <script src="script.js"></script>
