@@ -107,6 +107,15 @@ observer.observe(transactionTable, {
 // Initialize an empty array to store the transactions
 let transactions = [];
 
+// Load transactions on page load
+document.addEventListener('DOMContentLoaded', function() {
+  if (Auth.isLoggedIn()) {
+    transactions = DataManager.loadTransactions();
+    updateBalance();
+    updateTransactionTable();
+  }
+});
+
 // Variable to store the current transaction being edited
 let editedTransaction = null;
 
@@ -143,6 +152,9 @@ function addTransaction() {
   // Add the transaction to the array
   transactions.push(transaction);
 
+  // Save to localStorage
+  DataManager.saveTransactions(transactions);
+
   // Update the balance
   updateBalance();
 
@@ -161,6 +173,9 @@ function deleteTransaction(primeId) {
   if (index > -1) {
     transactions.splice(index, 1);
   }
+
+  // Save to localStorage
+  DataManager.saveTransactions(transactions);
 
   // Update the balance
   updateBalance();
@@ -229,6 +244,9 @@ function saveTransaction() {
 
   // Clear the edited transaction
   editedTransaction = null;
+
+  // Save to localStorage
+  DataManager.saveTransactions(transactions);
 
   // Update the balance
   updateBalance();
