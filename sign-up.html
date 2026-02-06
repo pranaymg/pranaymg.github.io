@@ -216,29 +216,30 @@
     </div>
   </footer>
   <script>feather.replace();</script>
-  <script src="auth.js"></script>
-  <script src="script.js"></script>
   <script>
-    document.querySelector('.modern-signup-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const fullname = document.getElementById('fullname').value;
-      const email = document.getElementById('email').value;
-      const mobile = document.getElementById('mobile').value;
-      const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirm-password').value;
-      
-      if (password !== confirmPassword) {
-        showErrorMessage('Passwords do not match');
-        return;
-      }
-      
-      const result = Auth.register(fullname, email, mobile, password);
-      if (result.success) {
-        showSuccessMessage(result.message);
-        setTimeout(() => window.location.href = './login.html', 1000);
-      } else {
-        showErrorMessage(result.message);
-      }
+    window.addEventListener('DOMContentLoaded', function() {
+      document.querySelector('.modern-signup-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        
+        if (password !== confirmPassword) {
+          alert('Passwords do not match');
+          return;
+        }
+        
+        const users = JSON.parse(localStorage.getItem('users') || '{}');
+        if (users[email]) {
+          alert('Email already registered');
+          return;
+        }
+        
+        users[email] = password;
+        localStorage.setItem('users', JSON.stringify(users));
+        alert('Registration successful!');
+        window.location.href = './login.html';
+      });
     });
   </script>
   <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>

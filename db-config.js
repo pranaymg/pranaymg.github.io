@@ -1,41 +1,6 @@
-// JSONBin.io Configuration - Free Online Database
-const DB_CONFIG = {
-  apiKey: '$2a$10$vXqKjH8xGxGxGxGxGxGxGxGxGxGxGxGxGxGxGxGxGxGxGxGxGxGx',
-  baseUrl: 'https://api.jsonbin.io/v3'
-};
-
-// Database Helper
-const DB = {
-  async request(method, endpoint, data = null) {
-    const options = {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Master-Key': DB_CONFIG.apiKey
-      }
-    };
-    if (data) options.body = JSON.stringify(data);
-    
-    const response = await fetch(DB_CONFIG.baseUrl + endpoint, options);
-    return response.json();
-  },
-
-  async createBin(data) {
-    return this.request('POST', '/b', data);
-  },
-
-  async readBin(binId) {
-    return this.request('GET', `/b/${binId}/latest`);
-  },
-
-  async updateBin(binId, data) {
-    return this.request('PUT', `/b/${binId}`, data);
-  }
-};
-
-// Auth Object with JSONBin
+// LocalStorage Only - No JSONBin
 const Auth = {
-  register: function(email, password, fullname) {
+  register: function(fullname, email, mobile, password) {
     const users = JSON.parse(localStorage.getItem('users') || '{}');
     
     if (users[email]) {
@@ -48,31 +13,33 @@ const Auth = {
       email,
       password: btoa(password),
       fullname,
-      binId: null
+      mobile
     };
     
     localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('currentUser', JSON.stringify({ email, fullname, userId }));
     
-    return { success: true, user: { email, fullname, userId } };
+    return { success: true, message: 'Registration successful! Please login.' };
   },
 
-  login: function(email, password) {
+  login: function(username, password) {
     const users = JSON.parse(localStorage.getItem('users') || '{}');
-    const user = users[email];
+    const user = users[username];
     
-    if (!user || user.password !== btoa(password)) {
-      return { success: false, message: 'Invalid email or password' };
+    if (!user) {
+      return { success: false, message: 'Invalid credentials' };
+    }
+    
+    if (user.password !== btoa(password)) {
+      return { success: false, message: 'Invalid credentials' };
     }
     
     localStorage.setItem('currentUser', JSON.stringify({ 
       email: user.email, 
       fullname: user.fullname, 
-      userId: user.userId,
-      binId: user.binId
+      userId: user.userId
     }));
     
-    return { success: true, user: { email: user.email, fullname: user.fullname, userId: user.userId } };
+    return { success: true, message: 'Login successful!' };
   },
 
   logout: function() {
@@ -90,48 +57,17 @@ const Auth = {
   }
 };
 
-// DataManager Object with JSONBin
 const DataManager = {
-  async saveTransactions(transactions) {
+  saveTransactions(transactions) {
     const user = Auth.getCurrentUser();
     if (!user) return;
-
-    const users = JSON.parse(localStorage.getItem('users') || '{}');
-    const userData = users[user.email];
-
-    try {
-      if (userData.binId) {
-        await DB.updateBin(userData.binId, { transactions });
-      } else {
-        const result = await DB.createBin({ transactions });
-        userData.binId = result.metadata.id;
-        users[user.email] = userData;
-        localStorage.setItem('users', JSON.stringify(users));
-        
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        currentUser.binId = result.metadata.id;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-      }
-    } catch (error) {
-      console.error('Error saving to JSONBin:', error);
-      localStorage.setItem('transactions_' + user.userId, JSON.stringify(transactions));
-    }
+    localStorage.setItem('transactions_' + user.userId, JSON.stringify(transactions));
   },
 
-  async loadTransactions() {
+  loadTransactions() {
     const user = Auth.getCurrentUser();
     if (!user) return [];
-
-    if (user.binId) {
-      try {
-        const result = await DB.readBin(user.binId);
-        return result.record.transactions || [];
-      } catch (error) {
-        console.error('Error loading from JSONBin:', error);
-      }
-    }
-    
-    const local = localStorage.getItem('transactions_' + user.userId);
-    return local ? JSON.parse(local) : [];
+    const data = localStorage.getItem('transactions_' + user.userId);
+    return data ? JSON.parse(data) : [];
   }
 };

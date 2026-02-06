@@ -37,16 +37,12 @@
         </ul>
         
         <div class="buttons" id="auth-buttons">
-          <a href="./login.html" class="btn-head"
-            ><i class="fas fa-sign-in-alt"></i> Log In</a
-          >
-          <a href="./sign-up.html" class="btn-head"
-            ><i class="fas fa-user-plus"></i> Sign Up</a>
+          <a href="./login.html" class="btn-head"><i class="fas fa-sign-in-alt"></i> Log In</a>
+          <a href="./sign-up.html" class="btn-head"><i class="fas fa-user-plus"></i> Sign Up</a>
         </div>
         <div class="buttons" id="user-info" style="display: none;">
-          <span class="user-name" style="color: #fff; margin-right: 10px;"></span>
-          <button onclick="Auth.logout(); location.reload();" class="btn-head"
-            ><i class="fas fa-sign-out-alt"></i> Logout</button>
+          <span id="user-name" style="color: #fff; margin-right: 10px;"></span>
+          <button onclick="logout()" class="btn-head"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
         <div class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation menu" role="button" tabindex="0">
             <i class="fas fa-bars" aria-hidden="true"></i>
@@ -181,7 +177,7 @@
               <span>Secure data protection</span>
             </li>
           </ul>
-          <a href="./sign-up.html" class="sign-up-button-btn">Sign Up Now</a>
+          <a href="#tracker" class="sign-up-button-btn">Start Tracking</a>
         </div>
         <div class="right-working-image">
         </div>
@@ -288,20 +284,15 @@
     </footer>
     <script>
       feather.replace();
-    </script>
-    <script src="db-config.js"></script>
-    <script src="auth.js"></script>
-    <script src="sms-parser.js"></script>
-    <script src="script.js"></script>
-    <script>
       // Show user info if logged in
-      if (Auth.isLoggedIn()) {
-        const user = Auth.getCurrentUser();
+      const user = localStorage.getItem('currentUser');
+      if (user) {
         document.getElementById('auth-buttons').style.display = 'none';
         document.getElementById('user-info').style.display = 'flex';
-        document.querySelector('.user-name').textContent = user.fullname;
       }
     </script>
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
     <script
       src="https://kit.fontawesome.com/your-font-awesome-kit.js"
       crossorigin="anonymous"

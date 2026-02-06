@@ -1,26 +1,20 @@
-// Authentication System
+// Auth system
 const Auth = {
-  register(fullname, email, mobile, password) {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    
-    if (users.find(u => u.email === email)) {
-      return { success: false, message: 'Email already registered' };
-    }
-    
-    users.push({ fullname, email, mobile, password, createdAt: Date.now() });
+  signup(email, password) {
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    if (users[email]) return false;
+    users[email] = password;
     localStorage.setItem('users', JSON.stringify(users));
-    return { success: true, message: 'Registration successful' };
+    return true;
   },
 
-  login(username, password) {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const user = users.find(u => (u.email === username || u.mobile === username) && u.password === password);
-    
-    if (user) {
-      localStorage.setItem('currentUser', JSON.stringify({ email: user.email, fullname: user.fullname }));
-      return { success: true, message: 'Login successful' };
+  login(email, password) {
+    const users = JSON.parse(localStorage.getItem('users') || '{}');
+    if (users[email] && users[email] === password) {
+      localStorage.setItem('currentUser', email);
+      return true;
     }
-    return { success: false, message: 'Invalid credentials' };
+    return false;
   },
 
   logout() {
@@ -28,25 +22,19 @@ const Auth = {
   },
 
   getCurrentUser() {
-    return JSON.parse(localStorage.getItem('currentUser'));
+    return localStorage.getItem('currentUser');
   },
 
   isLoggedIn() {
     return !!localStorage.getItem('currentUser');
-  }
-};
-
-// Data Management System
-const DataManager = {
-  saveTransactions(transactions) {
-    const user = Auth.getCurrentUser();
-    if (!user) return;
-    localStorage.setItem(`transactions_${user.email}`, JSON.stringify(transactions));
   },
 
-  loadTransactions() {
-    const user = Auth.getCurrentUser();
-    if (!user) return [];
-    return JSON.parse(localStorage.getItem(`transactions_${user.email}`) || '[]');
+  requireAuth() {
+    if (!this.isLoggedIn() && !window.location.pathname.includes('login') && !window.location.pathname.includes('sign-up')) {
+      window.location.href = './login.html';
+    }
   }
 };
+
+// Initialize auth check
+Auth.requireAuth();
