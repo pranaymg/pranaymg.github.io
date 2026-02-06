@@ -194,7 +194,12 @@
   <script>feather.replace();</script>
   <script>
     window.addEventListener('DOMContentLoaded', function() {
-      document.querySelector('.modern-login-form').addEventListener('submit', function(e) {
+      const form = document.querySelector('.modern-login-form');
+      if (!form) {
+        alert('Form not found!');
+        return;
+      }
+      form.addEventListener('submit', function(e) {
         e.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
@@ -204,7 +209,7 @@
           localStorage.setItem('currentUser', username);
           window.location.href = './index.html';
         } else {
-          alert('Invalid credentials');
+          alert('Invalid credentials. Please sign up first.');
         }
       });
     });

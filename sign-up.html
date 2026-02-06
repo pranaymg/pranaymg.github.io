@@ -218,7 +218,12 @@
   <script>feather.replace();</script>
   <script>
     window.addEventListener('DOMContentLoaded', function() {
-      document.querySelector('.modern-signup-form').addEventListener('submit', function(e) {
+      const form = document.querySelector('.modern-signup-form');
+      if (!form) {
+        alert('Form not found!');
+        return;
+      }
+      form.addEventListener('submit', function(e) {
         e.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -237,7 +242,7 @@
         
         users[email] = password;
         localStorage.setItem('users', JSON.stringify(users));
-        alert('Registration successful!');
+        alert('Registration successful! Please login.');
         window.location.href = './login.html';
       });
     });
