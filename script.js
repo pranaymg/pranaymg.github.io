@@ -1,3 +1,6 @@
+// Initialize transactions array
+let transactions = [];
+
 // Active Navigation Highlighting
 document.addEventListener('DOMContentLoaded', function() {
   // Get current page path
