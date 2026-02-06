@@ -226,24 +226,12 @@
       form.addEventListener('submit', function(e) {
         e.preventDefault();
         const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
-        
-        if (password !== confirmPassword) {
-          alert('Passwords do not match');
+        if (!email) {
+          alert('Please enter email');
           return;
         }
-        
-        const users = JSON.parse(localStorage.getItem('users') || '{}');
-        if (users[email]) {
-          alert('Email already registered');
-          return;
-        }
-        
-        users[email] = password;
-        localStorage.setItem('users', JSON.stringify(users));
-        alert('Registration successful! Please login.');
-        window.location.href = './login.html';
+        localStorage.setItem('currentUser', email);
+        window.location.href = './index.html';
       });
     });
   </script>
