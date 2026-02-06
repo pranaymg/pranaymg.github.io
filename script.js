@@ -120,11 +120,13 @@ let editedTransaction = null;
 function addTransaction() {
   const descriptionInput = document.getElementById("description");
   const amountInput = document.getElementById("amount");
+  const categoryInput = document.getElementById("category");
   const typeInput = document.getElementById("type");
   const dateInput = document.getElementById("date");
 
   const description = descriptionInput.value;
   const amount = parseFloat(amountInput.value);
+  const category = categoryInput.value;
   const type = typeInput.value;
   const chosenDate = new Date(dateInput.value);
 
@@ -143,6 +145,7 @@ function addTransaction() {
     primeId: chosenDate.getTime(),
     description: description,
     amount: amount,
+    category: category,
     type: type,
   };
 
@@ -191,6 +194,7 @@ function editTransaction(primeId) {
   // Populate the input fields with the transaction details for editing
   document.getElementById("description").value = transaction.description;
   document.getElementById("amount").value = transaction.amount;
+  document.getElementById("category").value = transaction.category || "Other";
   document.getElementById("type").value = transaction.type;
 
   // Store the current transaction being edited
@@ -215,11 +219,13 @@ function saveTransaction() {
   }
   const descriptionInput = document.getElementById("description");
   const amountInput = document.getElementById("amount");
+  const categoryInput = document.getElementById("category");
   const typeInput = document.getElementById("type");
   const dateInput = document.getElementById("date");
 
   const description = descriptionInput.value;
   const amount = parseFloat(amountInput.value);
+  const category = categoryInput.value;
   const type = typeInput.value;
   const chosenDate = new Date(dateInput.value);
 
@@ -231,6 +237,7 @@ function saveTransaction() {
   // Update the transaction details
   editedTransaction.description = description;
   editedTransaction.amount = amount;
+  editedTransaction.category = category;
   editedTransaction.type = type;
   editedTransaction.primeId = chosenDate.getTime();
 
@@ -359,6 +366,9 @@ function updateTransactionTable() {
     const currencyCode = currencySelect.value;
     const formattedAmount = formatCurrency(transaction.amount, currencyCode);
     amountCell.textContent = formattedAmount;
+
+    const categoryCell = newRow.insertCell();
+    categoryCell.textContent = transaction.category || "Other";
 
     const typeCell = newRow.insertCell();
     typeCell.textContent = transaction.type;
@@ -1251,3 +1261,56 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 });
+
+
+// Category Analysis Function
+function showCategoryAnalysis() {
+  const categoryTotals = {};
+  
+  transactions.forEach(t => {
+    if (t.type === 'expense') {
+      const cat = t.category || 'Other';
+      categoryTotals[cat] = (categoryTotals[cat] || 0) + t.amount;
+    }
+  });
+
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:10000;display:flex;align-items:center;justify-content:center;cursor:pointer';
+  modal.onclick = () => modal.remove();
+  
+  const card = document.createElement('div');
+  card.style.cssText = 'background:rgba(255,255,255,0.12);backdrop-filter:blur(40px) saturate(200%) brightness(110%);padding:30px;border-radius:30px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;border:1px solid rgba(255,255,255,0.25);box-shadow:0 8px 32px rgba(0,0,0,0.15);cursor:default';
+  card.onclick = (e) => e.stopPropagation();
+  
+  let content = '<h2 style="margin-top:0;color:#fff;text-align:center"><i class="fas fa-chart-pie"></i> Expense Categories</h2>';
+  
+  if (Object.keys(categoryTotals).length === 0) {
+    content += '<p style="color:rgba(255,255,255,0.8);text-align:center">No expenses recorded yet.</p>';
+  } else {
+    const total = Object.values(categoryTotals).reduce((a,b) => a+b, 0);
+    const currencySelect = document.getElementById('currency');
+    const currencyCode = currencySelect.value;
+    
+    content += '<div style="margin:20px 0">';
+    Object.entries(categoryTotals).sort((a,b) => b[1]-a[1]).forEach(([cat, amt]) => {
+      const percent = ((amt/total)*100).toFixed(1);
+      content += `<div style="margin:15px 0;padding:15px;background:rgba(255,255,255,0.08);border-radius:15px;border:1px solid rgba(255,255,255,0.15)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <strong style="color:#fff">${cat}</strong>
+          <span style="color:#43e97b;font-weight:bold">${formatCurrency(amt, currencyCode)}</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.1);border-radius:10px;height:10px;overflow:hidden">
+          <div style="background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);height:100%;width:${percent}%;transition:width 0.3s"></div>
+        </div>
+        <div style="text-align:right;margin-top:4px;font-size:12px;color:rgba(255,255,255,0.7)">${percent}%</div>
+      </div>`;
+    });
+    content += '</div>';
+  }
+  
+  content += '<button onclick="this.closest(\\'div\\').parentElement.remove()" style="padding:12px 24px;border:none;background:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);color:#1a1a2e;border-radius:15px;cursor:pointer;width:100%;font-weight:700;font-size:1rem;margin-top:10px">Close</button>';
+  
+  card.innerHTML = content;
+  modal.appendChild(card);
+  document.body.appendChild(modal);
+}

@@ -5,8 +5,7 @@
   <meta charset="UTF-8">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzBmMDA4MSIvPgo8Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxMiIgZmlsbD0iI2ZmOGMwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiLz4KPHBhdGggZD0iTTEwIDEySDIyVjE4SDEwVjEyWiIgZmlsbD0iI2ZmZmZmZiIvPgo8Y2lyY2xlIGN4PSIxNiIgY3k9IjE0IiByPSIxLjUiIGZpbGw9IiMwZjAwODEiLz4KPHBhdGggZD0iTTE0IDI0QzE0IDI2LjIwOTEgMTUuNzkwOSAyOCAxOCAyOEMyMC4yMDkxIDI4IDIyIDI2LjIwOTEgMjIgMjQiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="./sign-up.css">
+  <link rel="stylesheet" href="modern-theme.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css">
   <script src="https://unpkg.com/feather-icons"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -26,15 +25,10 @@
           <li><a href="./support.html">Support</a></li>
         </ul>
         
-        <!-- Search Bar -->
-        <div class="search-container">
-          <div class="search-bar">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" id="search-input" placeholder="Search" class="search-input">
-          </div>
-        </div>
-        
         <div class="buttons">
+          <button onclick="toggleTheme()" class="theme-toggle" title="Toggle Theme">
+            <i class="fas fa-moon" id="theme-icon"></i>
+          </button>
           <a href="./login.html" class="btn-head"><i class="fas fa-sign-in-alt"></i> Log In</a>
           <a href="./sign-up.html" class="btn-head"><i class="fas fa-user-plus"></i> Sign Up</a>
         </div>
