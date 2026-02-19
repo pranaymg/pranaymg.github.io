@@ -6,12 +6,13 @@
     <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzBmMDA4MSIvPgo8Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxMiIgZmlsbD0iI2ZmOGMwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiLz4KPHBhdGggZD0iTTEwIDEySDIyVjE4SDEwVjEyWiIgZmlsbD0iI2ZmZmZmZiIvPgo8Y2lyY2xlIGN4PSIxNiIgY3k9IjE0IiByPSIxLjUiIGZpbGw9IiMwZjAwODEiLz4KPHBhdGggZD0iTTE0IDI0QzE0IDI2LjIwOTEgMTUuNzkwOSAyOCAxOCAyOEMyMC4yMDkxIDI4IDIyIDI2LjIwOTEgMjIgMjQiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+">
     <link rel="icon" type="image/png" sizes="16x16" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiByeD0iMiIgZmlsbD0iIzBmMDA4MSIvPgo8Y2lyY2xlIGN4PSI4IiBjeT0iOCIgcj0iNiIgZmlsbD0iI2ZmOGMwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjEiLz4KPHBhdGggZD0iTTUgNkgxMVY5SDVWNloiIGZpbGw9IiNmZmZmZmYiLz4KPGNpcmNsZSBjeD0iOCIgY3k9IjciIHI9IjAuNSIgZmlsbD0iIzBmMDA4MSIvPgo8cGF0aCBkPSJNNyAxMkM3IDEzLjEwNDYgNy44OTU0MyAxNCA5IDE0QzEwLjEwNDYgMTQgMTEgMTMuMTA0NiAxMSAxMiIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4=">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <link rel="stylesheet" href="modern-theme.css" />
+    <link rel="stylesheet" href="ultra-modern.css" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css"
     />
     <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
 
@@ -23,6 +24,36 @@
   </head>
 
   <body>
+    <!-- Particle Background -->
+    <canvas id="particles"></canvas>
+    
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="quickAddTransaction()" title="Quick Add">
+      <i class="fas fa-plus"></i>
+    </button>
+    
+    <!-- Voice Command Button -->
+    <button class="voice-btn" onclick="toggleVoiceCommand()" title="Voice Command">
+      <i class="fas fa-microphone" id="voice-icon"></i>
+    </button>
+    
+    <!-- Voice Command Modal -->
+    <div id="voice-modal" style="display: none;">
+      <div class="voice-modal-content">
+        <h3><i class="fas fa-microphone-alt"></i> Voice Command</h3>
+        <p id="voice-status">Click the microphone to start...</p>
+        <div class="voice-animation" id="voice-animation">
+          <div class="voice-wave"></div>
+          <div class="voice-wave"></div>
+          <div class="voice-wave"></div>
+        </div>
+        <p id="voice-transcript" class="voice-transcript"></p>
+        <button onclick="toggleVoiceCommand()" class="voice-close-btn">Close</button>
+      </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
     
     <nav role="navigation" aria-label="Main navigation">
       <div class="navbar">
@@ -61,7 +92,7 @@
             Track your income and expenses effortlessly. Manage your budget, set
             financial goals, and make smarter decisions for more secure future.
           </p>
-          <a href="./sign-up.html" class="under-welcome-btn">Sign Up Now</a>
+          <a href="#tracker" class="under-welcome-btn">Get Started</a>
         </div>
         <div class="under-welcome-image">
         </div>
@@ -82,6 +113,46 @@
       <br />
 
       <div class="tracker-part">
+        <!-- Quick Stats Cards -->
+        <div class="stats-cards">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #00ff88, #00d4ff);">
+              <i class="fas fa-arrow-up"></i>
+            </div>
+            <div class="stat-info">
+              <p class="stat-label">Total Income</p>
+              <p class="stat-value" id="total-income">₹0</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #ff2e97, #ff6b6b);">
+              <i class="fas fa-arrow-down"></i>
+            </div>
+            <div class="stat-info">
+              <p class="stat-label">Total Expenses</p>
+              <p class="stat-value" id="total-expense">₹0</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #b537f2, #667eea);">
+              <i class="fas fa-calendar-day"></i>
+            </div>
+            <div class="stat-info">
+              <p class="stat-label">This Month</p>
+              <p class="stat-value" id="month-expense">₹0</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #ffd700, #ffa500);">
+              <i class="fas fa-receipt"></i>
+            </div>
+            <div class="stat-info">
+              <p class="stat-label">Transactions</p>
+              <p class="stat-value" id="total-transactions">0</p>
+            </div>
+          </div>
+        </div>
+
         <div class="tracker-balance">
           Current Balance: <span id="balance" class="current-balance"></span>
         </div>
@@ -123,7 +194,72 @@
           <button onclick="SMSReader.showSMSInput()" style="background: #28a745;"><i class="fas fa-sms"></i> Import SMS</button>
           <button onclick="handleDownload()">Export</button>
           <button onclick="showCategoryAnalysis()" style="background: #6c757d;"><i class="fas fa-chart-pie"></i> Categories</button>
+          <button onclick="showCharts()" style="background: linear-gradient(135deg, #667eea, #764ba2);"><i class="fas fa-chart-line"></i> Charts</button>
+          <button onclick="showAIInsights()" style="background: linear-gradient(135deg, #00ff88, #00d4ff);"><i class="fas fa-brain"></i> AI Insights</button>
         </div>
+
+        <!-- AI Insights Section -->
+        <div id="ai-insights-section" style="display: none; margin-top: 2rem;">
+          <div class="ai-insights-grid">
+            <div class="insight-card">
+              <div class="insight-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+              <h4>Smart Recommendations</h4>
+              <p id="ai-recommendation">Loading insights...</p>
+            </div>
+            <div class="insight-card">
+              <div class="insight-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <h4>Spending Trend</h4>
+              <p id="ai-trend">Analyzing patterns...</p>
+            </div>
+            <div class="insight-card">
+              <div class="insight-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <h4>Budget Alert</h4>
+              <p id="ai-alert">Checking budget...</p>
+            </div>
+            <div class="insight-card">
+              <div class="insight-icon">
+                <i class="fas fa-trophy"></i>
+              </div>
+              <h4>Financial Score</h4>
+              <p id="ai-score">Calculating score...</p>
+            </div>
+            <div class="insight-card">
+              <div class="insight-icon">
+                <i class="fas fa-piggy-bank"></i>
+              </div>
+              <h4>Savings Potential</h4>
+              <p id="ai-savings">Estimating savings...</p>
+            </div>
+            <div class="insight-card">
+              <div class="insight-icon">
+                <i class="fas fa-calendar-check"></i>
+              </div>
+              <h4>Best Day to Spend</h4>
+              <p id="ai-bestday">Analyzing history...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div id="charts-section" style="display: none; margin-top: 2rem;">
+          <div class="charts-grid">
+            <div class="chart-container">
+              <h3>Spending by Category</h3>
+              <canvas id="pieChart"></canvas>
+            </div>
+            <div class="chart-container">
+              <h3>Income vs Expenses</h3>
+              <canvas id="lineChart"></canvas>
+            </div>
+          </div>
+        </div>
+
         <div class="table-part" id="table-part">
           <table id="transaction-table">
             <tr>
@@ -285,11 +421,14 @@
     <script>
       feather.replace();
       // Show user info if logged in
-      const user = localStorage.getItem('currentUser');
-      if (user) {
-        document.getElementById('auth-buttons').style.display = 'none';
-        document.getElementById('user-info').style.display = 'flex';
-      }
+      document.addEventListener('DOMContentLoaded', function() {
+        const user = localStorage.getItem('currentUser');
+        if (user) {
+          document.getElementById('auth-buttons').style.display = 'none';
+          document.getElementById('user-info').style.display = 'flex';
+          document.getElementById('user-name').textContent = user;
+        }
+      });
     </script>
     <script src="auth.js"></script>
     <script src="script.js"></script>

@@ -54,6 +54,28 @@ function updateBalance() {
   const currency = document.getElementById('currency').value;
   const symbols = { USD: '$', EUR: '€', INR: '₹' };
   document.getElementById('balance').textContent = symbols[currency] + balance.toFixed(2);
+  
+  updateStats();
+}
+
+// Update stats cards
+function updateStats() {
+  const currency = document.getElementById('currency').value;
+  const symbols = { USD: '$', EUR: '€', INR: '₹' };
+  
+  const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+  const totalExpense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+  
+  const now = new Date();
+  const monthExpense = transactions.filter(t => {
+    const tDate = new Date(t.date);
+    return t.type === 'expense' && tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
+  }).reduce((sum, t) => sum + t.amount, 0);
+  
+  document.getElementById('total-income').textContent = symbols[currency] + totalIncome.toFixed(2);
+  document.getElementById('total-expense').textContent = symbols[currency] + totalExpense.toFixed(2);
+  document.getElementById('month-expense').textContent = symbols[currency] + monthExpense.toFixed(2);
+  document.getElementById('total-transactions').textContent = transactions.length;
 }
 
 // Update table
@@ -63,12 +85,13 @@ function updateTable() {
 
   transactions.forEach(t => {
     const row = table.insertRow();
+    row.className = t.type === 'income' ? 'income-row' : 'expense-row';
     row.innerHTML = `
       <td>${t.date}</td>
       <td>${t.description}</td>
-      <td>${t.amount}</td>
+      <td style="color: ${t.type === 'income' ? '#00ff88' : '#ff2e97'}; font-weight: 700;">${t.type === 'income' ? '+' : '-'}${t.amount}</td>
       <td>${t.category}</td>
-      <td>${t.type}</td>
+      <td><span style="padding: 5px 10px; border-radius: 10px; background: ${t.type === 'income' ? 'rgba(0,255,136,0.2)' : 'rgba(255,46,151,0.2)'}; color: ${t.type === 'income' ? '#00ff88' : '#ff2e97'}; font-size: 0.85rem; font-weight: 600;">${t.type}</span></td>
       <td>
         <button class="delete-button" onclick="deleteTransaction(${t.id})">Delete</button>
       </td>
@@ -166,6 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (currentUser) {
     document.getElementById('user-name').textContent = currentUser;
   }
+  // Set today's date as default
+  document.getElementById('date').valueAsDate = new Date();
   updateBalance();
   updateTable();
 });
@@ -175,3 +200,458 @@ function logout() {
   Auth.logout();
   window.location.href = './login.html';
 }
+
+// Charts
+let pieChart, lineChart;
+
+function showCharts() {
+  const section = document.getElementById('charts-section');
+  section.style.display = section.style.display === 'none' ? 'block' : 'none';
+  
+  if (section.style.display === 'block') {
+    renderPieChart();
+    renderLineChart();
+  }
+}
+
+function renderPieChart() {
+  const expenses = transactions.filter(t => t.type === 'expense');
+  const totals = {};
+  
+  expenses.forEach(t => {
+    totals[t.category] = (totals[t.category] || 0) + t.amount;
+  });
+  
+  const ctx = document.getElementById('pieChart');
+  if (pieChart) pieChart.destroy();
+  
+  pieChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(totals),
+      datasets: [{
+        data: Object.values(totals),
+        backgroundColor: [
+          '#00ff88', '#00d4ff', '#b537f2', '#ff2e97',
+          '#ffd700', '#ff6b6b', '#667eea', '#38f9d7'
+        ],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#fff', padding: 15, font: { size: 12 } }
+        }
+      }
+    }
+  });
+}
+
+function renderLineChart() {
+  const last7Days = [];
+  const incomeData = [];
+  const expenseData = [];
+  
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toISOString().split('T')[0];
+    last7Days.push(dateStr);
+    
+    const dayIncome = transactions.filter(t => t.type === 'income' && t.date === dateStr).reduce((sum, t) => sum + t.amount, 0);
+    const dayExpense = transactions.filter(t => t.type === 'expense' && t.date === dateStr).reduce((sum, t) => sum + t.amount, 0);
+    
+    incomeData.push(dayIncome);
+    expenseData.push(dayExpense);
+  }
+  
+  const ctx = document.getElementById('lineChart');
+  if (lineChart) lineChart.destroy();
+  
+  lineChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: last7Days.map(d => new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric' })),
+      datasets: [
+        {
+          label: 'Income',
+          data: incomeData,
+          borderColor: '#00ff88',
+          backgroundColor: 'rgba(0, 255, 136, 0.1)',
+          tension: 0.4,
+          fill: true
+        },
+        {
+          label: 'Expenses',
+          data: expenseData,
+          borderColor: '#ff2e97',
+          backgroundColor: 'rgba(255, 46, 151, 0.1)',
+          tension: 0.4,
+          fill: true
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          labels: { color: '#fff', padding: 15, font: { size: 12 } }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: '#fff' },
+          grid: { color: 'rgba(255, 255, 255, 0.1)' }
+        },
+        x: {
+          ticks: { color: '#fff' },
+          grid: { color: 'rgba(255, 255, 255, 0.1)' }
+        }
+      }
+    }
+  });
+}
+
+// Particle Background
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+for (let i = 0; i < 100; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    radius: Math.random() * 2 + 1,
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: (Math.random() - 0.5) * 0.5
+  });
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(0, 212, 255, 0.5)';
+  
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    
+    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+    
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  
+  requestAnimationFrame(animateParticles);
+}
+
+animateParticles();
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+// Toast Notifications
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  
+  const icons = {
+    success: 'fa-check-circle',
+    error: 'fa-exclamation-circle',
+    info: 'fa-info-circle'
+  };
+  
+  toast.innerHTML = `
+    <i class="fas ${icons[type]}"></i>
+    <span>${message}</span>
+  `;
+  
+  container.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease-out';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// Confetti Effect
+function createConfetti() {
+  for (let i = 0; i < 50; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.left = Math.random() * window.innerWidth + 'px';
+    confetti.style.top = '-10px';
+    confetti.style.background = ['#00ff88', '#00d4ff', '#b537f2', '#ff2e97'][Math.floor(Math.random() * 4)];
+    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+    document.body.appendChild(confetti);
+    
+    setTimeout(() => confetti.remove(), 3000);
+  }
+}
+
+// Quick Add Transaction (FAB)
+function quickAddTransaction() {
+  document.getElementById('description').focus();
+  document.getElementById('tracker').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Update addTransaction to include toast and confetti
+const originalAddTransaction = addTransaction;
+addTransaction = function() {
+  const oldBalance = transactions.reduce((sum, t) => {
+    return t.type === 'income' ? sum + t.amount : sum - t.amount;
+  }, 0);
+  
+  originalAddTransaction();
+  
+  const newBalance = transactions.reduce((sum, t) => {
+    return t.type === 'income' ? sum + t.amount : sum - t.amount;
+  }, 0);
+  
+  if (newBalance > oldBalance) {
+    createConfetti();
+    showToast('Transaction added! Balance increased! 🎉', 'success');
+  } else {
+    showToast('Transaction added successfully!', 'success');
+  }
+};
+
+// Update deleteTransaction to include toast
+const originalDeleteTransaction = deleteTransaction;
+deleteTransaction = function(id) {
+  originalDeleteTransaction(id);
+  showToast('Transaction deleted', 'info');
+};
+
+// AI Insights
+function showAIInsights() {
+  const section = document.getElementById('ai-insights-section');
+  section.style.display = section.style.display === 'none' ? 'block' : 'none';
+  
+  if (section.style.display === 'block') {
+    generateAIInsights();
+  }
+}
+
+function generateAIInsights() {
+  const currency = document.getElementById('currency').value;
+  const symbols = { USD: '$', EUR: '€', INR: '₹' };
+  
+  // Calculate metrics
+  const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+  const totalExpense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+  const avgExpense = totalExpense / (transactions.filter(t => t.type === 'expense').length || 1);
+  
+  // Category analysis
+  const categoryTotals = {};
+  transactions.filter(t => t.type === 'expense').forEach(t => {
+    categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
+  });
+  const topCategory = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
+  
+  // Trend analysis
+  const last7Days = transactions.filter(t => {
+    const date = new Date(t.date);
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return date >= weekAgo && t.type === 'expense';
+  }).reduce((sum, t) => sum + t.amount, 0);
+  
+  // Day analysis
+  const daySpending = {};
+  transactions.filter(t => t.type === 'expense').forEach(t => {
+    const day = new Date(t.date).toLocaleDateString('en', { weekday: 'long' });
+    daySpending[day] = (daySpending[day] || 0) + t.amount;
+  });
+  const bestDay = Object.entries(daySpending).sort((a, b) => a[1] - b[1])[0];
+  
+  // Financial Score (0-100)
+  const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpense) / totalIncome) * 100 : 0;
+  const score = Math.max(0, Math.min(100, Math.round(savingsRate)));
+  
+  // Generate insights
+  document.getElementById('ai-recommendation').textContent = 
+    topCategory ? `You're spending most on ${topCategory[0]} (${symbols[currency]}${topCategory[1].toFixed(2)}). Consider setting a budget limit for this category.` 
+    : 'Start tracking expenses to get personalized recommendations!';
+  
+  document.getElementById('ai-trend').textContent = 
+    last7Days > 0 ? `Your spending in the last 7 days: ${symbols[currency]}${last7Days.toFixed(2)}. ${last7Days > avgExpense * 7 ? '⚠️ Higher than usual!' : '✅ Looking good!'}` 
+    : 'No recent transactions to analyze.';
+  
+  document.getElementById('ai-alert').textContent = 
+    totalExpense > totalIncome ? `⚠️ You've spent ${symbols[currency]}${(totalExpense - totalIncome).toFixed(2)} more than earned. Time to cut back!` 
+    : `✅ Great! You're ${symbols[currency]}${(totalIncome - totalExpense).toFixed(2)} ahead.`;
+  
+  document.getElementById('ai-score').textContent = 
+    `Your financial health score: ${score}/100. ${score >= 70 ? '🏆 Excellent!' : score >= 40 ? '📈 Good, keep improving!' : '⚠️ Needs attention!'}`;
+  
+  document.getElementById('ai-savings').textContent = 
+    totalIncome > 0 ? `You could save ${symbols[currency]}${(totalExpense * 0.2).toFixed(2)} by reducing expenses by 20%. Small changes make big differences!` 
+    : 'Add income transactions to see savings potential.';
+  
+  document.getElementById('ai-bestday').textContent = 
+    bestDay ? `${bestDay[0]} is your lowest spending day (${symbols[currency]}${bestDay[1].toFixed(2)}). Try shopping on this day!` 
+    : 'Track more transactions to find your best spending day.';
+}
+
+// Voice Command System
+let recognition;
+let isListening = false;
+
+function initVoiceRecognition() {
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+    
+    recognition.onstart = () => {
+      isListening = true;
+      document.querySelector('.voice-btn').classList.add('listening');
+      document.getElementById('voice-status').textContent = 'Listening... Speak now!';
+      document.getElementById('voice-animation').style.display = 'flex';
+    };
+    
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript.toLowerCase();
+      document.getElementById('voice-transcript').textContent = `"${transcript}"`;
+      processVoiceCommand(transcript);
+    };
+    
+    recognition.onerror = (event) => {
+      showToast('Voice recognition error: ' + event.error, 'error');
+      stopListening();
+    };
+    
+    recognition.onend = () => {
+      stopListening();
+    };
+  } else {
+    showToast('Voice recognition not supported in this browser', 'error');
+  }
+}
+
+function toggleVoiceCommand() {
+  const modal = document.getElementById('voice-modal');
+  
+  if (modal.style.display === 'none') {
+    modal.style.display = 'flex';
+    document.getElementById('voice-transcript').textContent = '';
+    document.getElementById('voice-status').textContent = 'Click microphone to start...';
+    document.getElementById('voice-animation').style.display = 'none';
+    
+    if (!recognition) initVoiceRecognition();
+    
+    setTimeout(() => {
+      if (recognition) {
+        recognition.start();
+      }
+    }, 500);
+  } else {
+    modal.style.display = 'none';
+    if (recognition && isListening) {
+      recognition.stop();
+    }
+  }
+}
+
+function stopListening() {
+  isListening = false;
+  document.querySelector('.voice-btn').classList.remove('listening');
+  document.getElementById('voice-status').textContent = 'Processing...';
+  document.getElementById('voice-animation').style.display = 'none';
+}
+
+function processVoiceCommand(command) {
+  // Parse: "add 500 rupees food expense"
+  // Parse: "add 1000 salary income"
+  // Parse: "show balance"
+  // Parse: "show charts"
+  
+  if (command.includes('show balance')) {
+    document.getElementById('voice-modal').style.display = 'none';
+    document.getElementById('tracker').scrollIntoView({ behavior: 'smooth' });
+    showToast('Showing balance', 'info');
+    return;
+  }
+  
+  if (command.includes('show chart')) {
+    document.getElementById('voice-modal').style.display = 'none';
+    showCharts();
+    showToast('Opening charts', 'info');
+    return;
+  }
+  
+  if (command.includes('show insight')) {
+    document.getElementById('voice-modal').style.display = 'none';
+    showAIInsights();
+    showToast('Opening AI insights', 'info');
+    return;
+  }
+  
+  // Extract amount
+  const amountMatch = command.match(/(\d+)/);
+  if (!amountMatch) {
+    showToast('Could not understand amount. Try: "add 500 food expense"', 'error');
+    setTimeout(() => document.getElementById('voice-modal').style.display = 'none', 2000);
+    return;
+  }
+  
+  const amount = parseFloat(amountMatch[1]);
+  
+  // Determine type
+  const isIncome = command.includes('income') || command.includes('salary') || command.includes('earning');
+  const type = isIncome ? 'income' : 'expense';
+  
+  // Determine category
+  let category = 'Other';
+  const categories = ['food', 'shopping', 'transport', 'bills', 'entertainment', 'health', 'education', 'salary'];
+  for (const cat of categories) {
+    if (command.includes(cat)) {
+      category = cat.charAt(0).toUpperCase() + cat.slice(1);
+      break;
+    }
+  }
+  
+  // Add transaction
+  const description = `Voice: ${category} ${type}`;
+  const date = new Date().toISOString().split('T')[0];
+  
+  transactions.push({
+    id: Date.now(),
+    description,
+    amount,
+    category,
+    type,
+    date
+  });
+  
+  saveTransactions();
+  updateBalance();
+  updateTable();
+  
+  document.getElementById('voice-modal').style.display = 'none';
+  showToast(`Added ${type}: ₹${amount} for ${category}`, 'success');
+  
+  if (type === 'income') {
+    createConfetti();
+  }
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+  initVoiceRecognition();
+});

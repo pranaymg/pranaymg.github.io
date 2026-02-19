@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzBmMDA4MSIvPgo8Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxMiIgZmlsbD0iI2ZmOGMwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiLz4KPHBhdGggZD0iTTEwIDEySDIyVjE4SDEwVjEyWiIgZmlsbD0iI2ZmZmZmZiIvPgo8Y2lyY2xlIGN4PSIxNiIgY3k9IjE0IiByPSIxLjUiIGZpbGw9IiMwZjAwODEiLz4KPHBhdGggZD0iTTE0IDI0QzE0IDI2LjIwOTEgMTUuNzkwOSAyOCAxOCAyOEMyMC4yMDkxIDI4IDIyIDI2LjIwOTEgMjIgMjQiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="modern-theme.css">
+  <link rel="stylesheet" href="ultra-modern.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css">
   <script src="https://unpkg.com/feather-icons"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -18,11 +18,10 @@
       <div class="navbar">
         <a href="./index.html" class="logo"><i class="fas fa-chart-line"></i> Finance Tracker</a>
         <ul class="nav-links">
-          <li><a href="./index.html" class="active">Home</a></li>
+          <li><a href="./index.html">Home</a></li>
           <li><a href="./index.html#tracker">Use Tracker</a></li>
           <li><a href="./index.html#how-it-works">How it Works</a></li>
           <li><a href="./index.html#invite">Community</a></li>
-          <li><a href="./support.html">Support</a></li>
         </ul>
         
         <div class="buttons">
@@ -35,120 +34,27 @@
       </div>
     </nav>
 
-    <!-- Hero Section -->
-    <div class="signup-hero">
-      <div class="signup-hero-content">
-        <div class="signup-hero-text">
-          <h1>Join Finance Tracker</h1>
-          <p>Start your journey to financial freedom with our comprehensive personal finance tracking tool.</p>
-          <div class="signup-benefits">
-            <div class="benefit-item">
-              <i class="fas fa-chart-line"></i>
-              <span>Track Your Finances</span>
-            </div>
-            <div class="benefit-item">
-              <i class="fas fa-shield-alt"></i>
-              <span>Secure & Private</span>
-            </div>
-            <div class="benefit-item">
-              <i class="fas fa-mobile-alt"></i>
-              <span>Access Anywhere</span>
-            </div>
-          </div>
-        </div>
-        <div class="signup-hero-image">
-          <div class="floating-card">
-            <i class="fas fa-wallet"></i>
-            <h3>Smart Budgeting</h3>
-            <p>Manage your money like a pro</p>
-          </div>
-          <div class="floating-card">
-            <i class="fas fa-piggy-bank"></i>
-            <h3>Save More</h3>
-            <p>Reach your financial goals</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Sign Up Form Section -->
     <div class="signup-container">
       <div class="signup-form-wrapper">
         <div class="signup-form-header">
           <h2>Create Your Account</h2>
-          <p>Fill in your details to get started</p>
+          <p>Enter your email to get started</p>
         </div>
         
         <form class="modern-signup-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="fullname">
-                <i class="fas fa-user"></i>
-                Full Name <span>*</span>
-              </label>
-              <input type="text" id="fullname" name="fullname" required placeholder="Enter your full name">
-            </div>
-            <div class="form-group">
-              <label for="email">
-                <i class="fas fa-envelope"></i>
-                Email Address <span>*</span>
-              </label>
-              <input type="email" id="email" name="email" required placeholder="Enter your email">
-            </div>
-          </div>
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label for="mobile">
-                <i class="fas fa-phone"></i>
-                Mobile Number <span>*</span>
-              </label>
-              <input type="tel" id="mobile" name="mobile" required placeholder="Enter your mobile number">
-            </div>
-            <div class="form-group">
-              <label for="password">
-                <i class="fas fa-lock"></i>
-                Password <span>*</span>
-              </label>
-              <input type="password" id="password" name="password" required placeholder="Create a strong password">
-            </div>
-          </div>
-          
           <div class="form-group">
-            <label for="confirm-password">
-              <i class="fas fa-lock"></i>
-              Confirm Password <span>*</span>
+            <label for="email">
+              <i class="fas fa-envelope"></i>
+              Email Address
             </label>
-            <input type="password" id="confirm-password" name="confirm-password" required placeholder="Confirm your password">
-          </div>
-          
-          <div class="form-group checkbox-group">
-            <label class="checkbox-label">
-              <input type="checkbox" required>
-              <span class="checkmark"></span>
-              I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
-            </label>
+            <input type="email" id="email" name="email" required placeholder="Enter your email">
           </div>
           
           <button type="submit" class="signup-btn">
             <i class="fas fa-user-plus"></i>
             Create Account
           </button>
-          
-          <div class="signup-divider">
-            <span>or</span>
-          </div>
-          
-          <div class="social-signup">
-            <button type="button" class="social-btn google-btn">
-              <i class="fab fa-google"></i>
-              Sign up with Google
-            </button>
-            <button type="button" class="social-btn facebook-btn">
-              <i class="fab fa-facebook-f"></i>
-              Sign up with Facebook
-            </button>
-          </div>
           
           <div class="signup-footer">
             <p>Already have an account? <a href="./login.html">Sign in here</a></p>
